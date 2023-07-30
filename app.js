@@ -3,18 +3,40 @@ import path from "path";
 import { fileURLToPath } from "url";
 import methodOverride from "method-override";
 import mongoose from "mongoose";
-import { Campground } from "./campground.js";
 import ejsMate from "ejs-mate";
 import AppError from "./utils/ErrorHandler.js";
-import catchAsync from "./utils/catchAsync.js";
-import { campgroundSchema } from "./utils/validateSchema.js";
-mongoose.connect("mongodb://127.0.0.1:27017/YelpCamp")
+import { router } from "./routes/campgrounds.js";
+import { router2 } from "./routes/reviews.js";
+import { router3 } from "./routes/users.js";
+import session from "express-session";
+import flash from "connect-flash";
+import passport from "passport";
+import LocalStrategy from "passport-local";
+import { User } from "./models/user.js";
+import mongoSanitizefrom from "express-mongo-sanitize";
+import helmet from "helmet";
+import MongoStore from "connect-mongo";
+import dotEnv from "dotenv";
+dotEnv.config();
+const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/YelpCamp";
+const secret = process.env.SECRET || 'thereshouldbeabettersecret!';
+mongoose.connect(dbUrl)
     .then(() => {
         console.log("Database Connected");
     })
     .catch(err => {
         console.log(err);
     });
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret
+    }
+});
+store.on("error", e => {
+    console.log("Error!", e);
+});
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = Express();
@@ -24,46 +46,84 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
 app.use(urlencoded({ extended: true }));
 app.use(Express.json());
-function campGround(req, res, next) {
-    const { error } = campgroundSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message);
-        throw new AppError(msg, 400);
+app.use(Express.static(path.join(__dirname, "public")));
+app.use(mongoSanitizefrom());
+// app.use(helmet());
+const sessionConfig = {
+    store,
+    name: "session",
+    secret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        // secure:true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
     }
-    else next();
-}
-app.get("/campgrounds", catchAsync(async (req, res) => {
-    const campgrounds = await Campground.find({});
-    res.render("campgrounds/index", { campgrounds });
-}));
-app.get("/campgrounds/new", (req, res) => {
-    res.render("campgrounds/new");
+};
+const scriptSrcUrls = [
+    "https://stackpath.bootstrapcdn.com/",
+    "https://api.tiles.mapbox.com/",
+    "https://api.mapbox.com/",
+    "https://kit.fontawesome.com/",
+    "https://cdnjs.cloudflare.com/",
+    "https://cdn.jsdelivr.net",
+];
+const styleSrcUrls = [
+    "https://kit-free.fontawesome.com/",
+    "https://stackpath.bootstrapcdn.com/",
+    "https://api.mapbox.com/",
+    "https://api.tiles.mapbox.com/",
+    "https://fonts.googleapis.com/",
+    "https://use.fontawesome.com/",
+    "https://cdn.jsdelivr.net",
+];
+const connectSrcUrls = [
+    "https://api.mapbox.com/",
+    "https://a.tiles.mapbox.com/",
+    "https://b.tiles.mapbox.com/",
+    "https://events.mapbox.com/",
+];
+const fontSrcUrls = [];
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: [],
+            connectSrc: ["'self'", ...connectSrcUrls],
+            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+            workerSrc: ["'self'", "blob:"],
+            objectSrc: [],
+            imgSrc: [
+                "'self'",
+                "blob:",
+                "data:",
+                "https://res.cloudinary.com/db2rejptr/",
+                "https://images.unsplash.com/",
+            ],
+            fontSrc: ["'self'", ...fontSrcUrls],
+        },
+    })
+);
+app.use(session(sessionConfig));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
 });
-app.post("/campgrounds", campGround, catchAsync(async (req, res) => {
-    const camp = new Campground(req.body.campground);
-    await camp.save();
-    res.redirect(`/campgrounds/${camp._id}`);
-}));
-app.get("/campgrounds/:id", catchAsync(async (req, res) => {
-    let { id } = req.params;
-    const camp = await Campground.findById(id);
-    res.render("campgrounds/show", { camp });
-}));
-app.get("/campgrounds/:id/edit", catchAsync(async (req, res) => {
-    let { id } = req.params;
-    const camp = await Campground.findById(id);
-    res.render("campgrounds/edit", { camp });
-}));
-app.put("/campgrounds/:id", campGround, catchAsync(async (req, res) => {
-    let { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
-    res.redirect(`/campgrounds/${campground._id}`);
-}));
-app.delete("/campgrounds/:id", catchAsync(async (req, res) => {
-    let { id } = req.params;
-    await Campground.findByIdAndDelete(id);
-    res.redirect("/campgrounds");
-}));
+app.use("/", router3);
+app.use("/campgrounds", router);
+app.use("/campgrounds/:id/reviews", router2);
+app.get("/", (req, res) => {
+    res.render("home");
+});
 app.all("*", (req, res, next) => {
     next(new AppError("Page not found!!!", 404));
 });
