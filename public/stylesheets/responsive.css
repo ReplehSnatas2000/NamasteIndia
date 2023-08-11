@@ -1,0 +1,15 @@
+@media (max-width:770px) {
+    .row {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .col-6 {
+        margin-bottom: 3vw;
+        width: auto;
+    }
+
+    #review-card {
+        max-height: 100% !important;
+    }
+}

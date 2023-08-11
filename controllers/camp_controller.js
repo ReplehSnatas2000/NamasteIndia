@@ -22,7 +22,7 @@ export async function createCampground(req, res) {
     camp.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     camp.author = req.user._id;
     await camp.save();
-    req.flash("success", "Successfully made a new campground!");
+    req.flash("success", "Successfully created tourist site!");
     res.redirect(`/campgrounds/${camp._id}`);
 }
 export async function showCampground(req, res) {
@@ -37,7 +37,7 @@ export async function editCampform(req, res) {
     let { id } = req.params;
     const camp = await Campground.findById(id);
     if (!camp) {
-        req.flash("error", "No campground exists by that Id!");
+        req.flash("error", "No site exists by that Id!");
         res.redirect("/campgrounds");
     }
     else res.render("campgrounds/edit", { camp });
@@ -54,7 +54,7 @@ export async function editCampground(req, res) {
         }
         await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
     }
-    req.flash("success", "Successfully updated campground!");
+    req.flash("success", "Successfully updated site!");
     res.redirect(`/campgrounds/${campground._id}`);
 }
 export async function deleteCampground(req, res) {

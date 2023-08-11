@@ -13,7 +13,6 @@ imageSchema.virtual("thumbnail").get(function () {
 const opts = { toJSON: { virtuals: true } };
 const campGroundSchema = new Schema({
     title: String,
-    price: Number,
     geometry: {
         type: {
             type: String,

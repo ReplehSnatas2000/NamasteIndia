@@ -18,8 +18,8 @@ import helmet from "helmet";
 import MongoStore from "connect-mongo";
 import dotEnv from "dotenv";
 dotEnv.config();
-const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/YelpCamp";
-const secret = process.env.SECRET || 'thereshouldbeabettersecret!';
+const dbUrl = process.env.DB_URL;
+const secret = process.env.SECRET;
 mongoose.connect(dbUrl)
     .then(() => {
         console.log("Database Connected");
@@ -48,7 +48,6 @@ app.use(urlencoded({ extended: true }));
 app.use(Express.json());
 app.use(Express.static(path.join(__dirname, "public")));
 app.use(mongoSanitizefrom());
-// app.use(helmet());
 const sessionConfig = {
     store,
     name: "session",
@@ -56,7 +55,6 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: true,
     cookie: {
-        // secure:true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
@@ -99,7 +97,8 @@ app.use(
                 "blob:",
                 "data:",
                 "https://res.cloudinary.com/db2rejptr/",
-                "https://images.unsplash.com/",
+                "https://plus.unsplash.com/",
+                "https://images.unsplash.com/"
             ],
             fontSrc: ["'self'", ...fontSrcUrls],
         },

@@ -1,6 +1,6 @@
 <% layout("layouts/boilerplate") %>
     <div id="cluster-map" class="card mb-3"></div>
-    <h1>Campgrounds</h1>
+    <h1>Tourist Places</h1>
     <% for(let campground of campgrounds) { %>
         <div class="card mb-3">
             <div class="row">
@@ -9,7 +9,7 @@
                         <img crossorigin="anonymous" src="<%= campground.images[0].url %>" alt="CampGround" class="img-fluid">
                         <% } else { %>
                             <img crossorigin="anonymous" class="img-fluid"
-                                src="https://images.unsplash.com/photo-1533575770077-052fa2c609fc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                                src="https://images.unsplash.com/photo-1532375810709-75b1da00537c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1176&q=80"
                                 alt="">
                             <% } %>
                 </div>
