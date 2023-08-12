@@ -10,7 +10,7 @@ export async function postRegister(req, res, next) {
         req.login(registeredUser, err => {
             if (err) return next(err);
             req.flash("success", "Welcome to Yelp Camp!");
-            res.redirect("/campgrounds");
+            res.redirect("/touristsites");
         });
     }
     catch (e) {
@@ -22,13 +22,13 @@ export function renderLogin(req, res) {
 }
 export function postLogin(req, res) {
     req.flash("success", "Logged in successfully");
-    const redirectUrl = res.locals.returnTo || '/campgrounds';
+    const redirectUrl = res.locals.returnTo || '/touristsites';
     res.redirect(redirectUrl);
 }
 export function logOut(req, res, next) {
     req.logout(err => {
         if (err) return next(err);
         req.flash("success", "Goodbye!");
-        res.redirect("/campgrounds");
+        res.redirect("/touristsites");
     });
 }

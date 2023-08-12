@@ -4,7 +4,7 @@ export async function deleteReview(req, res) {
     const { id, reviewID } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewID } });
     await Review.findByIdAndDelete(reviewID);
-    res.redirect(`/campgrounds/${id}`);
+    res.redirect(`/touristsites/${id}`);
 }
 export async function postReview(req, res) {
     const campground = await Campground.findById(req.params.id);
@@ -14,5 +14,5 @@ export async function postReview(req, res) {
     await review.save();
     await campground.save();
     req.flash("success", "Created new review!");
-    res.redirect(`/campgrounds/${campground._id}`);
+    res.redirect(`/touristsites/${campground._id}`);
 }

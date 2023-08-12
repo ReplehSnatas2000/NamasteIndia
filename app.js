@@ -17,6 +17,7 @@ import mongoSanitizefrom from "express-mongo-sanitize";
 import helmet from "helmet";
 import MongoStore from "connect-mongo";
 import dotEnv from "dotenv";
+import favicon from "serve-favicon";
 dotEnv.config();
 const dbUrl = process.env.DB_URL;
 const secret = process.env.SECRET;
@@ -44,6 +45,7 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
+app.use(favicon(path.join(__dirname, "/swastik.ico")));
 app.use(urlencoded({ extended: true }));
 app.use(Express.json());
 app.use(Express.static(path.join(__dirname, "public")));
@@ -118,8 +120,8 @@ app.use((req, res, next) => {
     next();
 });
 app.use("/", router3);
-app.use("/campgrounds", router);
-app.use("/campgrounds/:id/reviews", router2);
+app.use("/touristsites", router);
+app.use("/touristsites/:id/reviews", router2);
 app.get("/", (req, res) => {
     res.render("home");
 });

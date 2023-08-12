@@ -47,10 +47,10 @@
                 </ul>
                 <% if(currentUser && camp.author.equals(currentUser._id)) { %>
                     <div class="card-body">
-                        <form class="d-inline" action="/campgrounds/<%= camp._id %>?_method=delete" method="post">
+                        <form class="d-inline" action="/touristsites/<%= camp._id %>?_method=delete" method="post">
                             <button type="submit" class="card-link btn btn-danger">Delete</button>
                         </form>
-                        <a href="/campgrounds/<%= camp._id %>/edit" class="card-link btn btn-warning">Edit</a>
+                        <a href="/touristsites/<%= camp._id %>/edit" class="card-link btn btn-warning">Edit</a>
                     </div>
                     <% } %>
             </div>
@@ -61,7 +61,7 @@
             </div>
             <% if(currentUser) { %>
                 <h2>Leave a review</h2>
-                <form action="/campgrounds/<%= camp._id %>/reviews" method="post" class="needs-validation mb-3"
+                <form action="/touristsites/<%= camp._id %>/reviews" method="post" class="needs-validation mb-3"
                     novalidate>
                     <div>
                         <fieldset class="starability-basic">
@@ -105,7 +105,7 @@
                                             </p>
                                             <% if(currentUser && review.author.equals(currentUser._id)) { %>
                                                 <form
-                                                    action="/campgrounds/<%= camp._id %>/reviews/<%= review._id %>?_method=delete"
+                                                    action="/touristsites/<%= camp._id %>/reviews/<%= review._id %>?_method=delete"
                                                     method="post">
                                                     <button class="btn btn-sm btn-danger" type="submit">Delete</button>
                                                 </form>

@@ -7,10 +7,10 @@ const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 export async function index(req, res) {
     const campgrounds = await Campground.find({});
-    res.render("campgrounds/index", { campgrounds });
+    res.render("touristsites/index", { campgrounds });
 }
 export function newCampground(req, res) {
-    res.render("campgrounds/new");
+    res.render("touristsites/new");
 }
 export async function createCampground(req, res) {
     const geoData = await geocoder.forwardGeocode({
@@ -23,7 +23,7 @@ export async function createCampground(req, res) {
     camp.author = req.user._id;
     await camp.save();
     req.flash("success", "Successfully created tourist site!");
-    res.redirect(`/campgrounds/${camp._id}`);
+    res.redirect(`/touristsites/${camp._id}`);
 }
 export async function showCampground(req, res) {
     let { id } = req.params;
@@ -31,16 +31,16 @@ export async function showCampground(req, res) {
         path: "reviews",
         populate: { path: "author" }
     });
-    res.render("campgrounds/show", { camp });
+    res.render("touristsites/show", { camp });
 }
 export async function editCampform(req, res) {
     let { id } = req.params;
     const camp = await Campground.findById(id);
     if (!camp) {
         req.flash("error", "No site exists by that Id!");
-        res.redirect("/campgrounds");
+        res.redirect("/touristsites");
     }
-    else res.render("campgrounds/edit", { camp });
+    else res.render("touristsites/edit", { camp });
 }
 export async function editCampground(req, res) {
     let { id } = req.params;
@@ -55,10 +55,10 @@ export async function editCampground(req, res) {
         await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
     }
     req.flash("success", "Successfully updated site!");
-    res.redirect(`/campgrounds/${campground._id}`);
+    res.redirect(`/touristsites/${campground._id}`);
 }
 export async function deleteCampground(req, res) {
     let { id } = req.params;
     await Campground.findByIdAndDelete(id);
-    res.redirect("/campgrounds");
+    res.redirect("/touristsites");
 }

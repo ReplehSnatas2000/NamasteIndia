@@ -21,7 +21,7 @@ export async function isOwner(req, res, next) {
     const campground = await Campground.findById(id);
     if (!campground.author.equals(req.user._id)) {
         req.flash("error", "You do not have the permission to do that!");
-        res.redirect(`/campgrounds/${campground._id}`);
+        res.redirect(`/touristsites/${campground._id}`);
     }
     else next();
 }
@@ -30,7 +30,7 @@ export async function isReviewOwner(req, res, next) {
     const review = await Review.findById(reviewID);
     if (!review.author.equals(req.user._id)) {
         req.flash("error", "You do not have the permission to do that!");
-        res.redirect(`/campgrounds/${id}`);
+        res.redirect(`/touristsites/${id}`);
     }
     else next();
 }
