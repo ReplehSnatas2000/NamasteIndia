@@ -1,2 +1,2 @@
 # YelpCamp
- Repo for my YelpCamp project
+ Repo for my Indian tourist app project
