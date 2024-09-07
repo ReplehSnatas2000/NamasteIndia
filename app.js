@@ -119,6 +119,7 @@ app.use((req, res, next) => {
     res.locals.error = req.flash("error");
     next();
 });
+const port = process.env.PORT || 1000;
 app.use("/", router3);
 app.use("/touristsites", router);
 app.use("/touristsites/:id/reviews", router2);
@@ -133,6 +134,6 @@ app.use((err, req, res, next) => {
     if (!err.message) err.message = "Something Went Wrong";
     res.status(statusCode).render("error", { err });
 });
-app.listen(1000, () => {
-    console.log("Connected to 1000");
+app.listen(port, () => {
+    console.log(`Connected to ${port}`);
 });
