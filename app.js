@@ -126,7 +126,7 @@ app.use("/touristsites/:id/reviews", router2);
 app.get("/", (req, res) => {
     res.render("home");
 });
-app.all("*splat", (req, res, next) => {
+app.all("*", (req, res, next) => {
     next(new AppError("Page not found!!!", 404));
 });
 app.use((err, req, res, next) => {
